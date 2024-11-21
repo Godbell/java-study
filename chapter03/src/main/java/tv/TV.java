@@ -1,11 +1,11 @@
-package chapter03;
+package tv;
 
-public class WatchTV {
+public class TV {
 	private int channel;
 	private int volume;
 	private boolean power;
 	
-	public WatchTV(int channel, int volume, boolean power) {
+	public TV(int channel, int volume, boolean power) {
 		this.channel = channel;
 		this.volume = volume;
 		this.power = power;
