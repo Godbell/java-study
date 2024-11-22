@@ -1,5 +1,7 @@
 package prob04;
 
+import java.util.Arrays;
+
 public class MyStack {
 	private int top;
 	private String[] buffer;
@@ -35,12 +37,6 @@ public class MyStack {
 	}
 
 	private void resize() {
-		String[] newBuffer = new String[this.top + 2];
-		
-		for (int i = 0; i < this.top + 1; ++i) {
-			newBuffer[i] = this.buffer[i];
-		}
-		
-		this.buffer = newBuffer;
-	}	
+		this.buffer = Arrays.copyOf(this.buffer, this.buffer.length + 1);
+	}
 }
