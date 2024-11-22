@@ -1,6 +1,6 @@
 package paint;
 
-public class Point {
+public class Point implements Drawable {
 	private int x;
 	private int y;
 	
@@ -28,13 +28,14 @@ public class Point {
 		this.y = y;
 	}
 
-	public void show() {
+	@Override
+	public void draw() {
 		System.out.println("Point[x=" + x + ", y="+ y +"]를 그렸습니다.");
 	}
 
-	public void show(boolean visible) {
+	public void draw(boolean visible) {
 		if (visible) {
-			show();
+			draw();
 		} else {
 			System.out.println("Point[x=" + x + ", y="+ y +"]를 지웠습니다.");
 		}
