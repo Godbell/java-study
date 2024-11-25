@@ -1,5 +1,7 @@
 package prob06;
 
+import java.util.Objects;
+
 public class Money extends Object {
 	public final int amount;
 	
@@ -33,12 +35,19 @@ public class Money extends Object {
 	}
 	
 	@Override
+	public int hashCode() {
+		return Objects.hash(amount);
+	}
+
+	@Override
 	public boolean equals(Object obj) {
-		if (!(obj instanceof Money)) {
+		if (this == obj)
+			return true;
+		if (obj == null)
 			return false;
-		}
-		
-		Money target = (Money)obj;
-		return target.amount == this.amount;
+		if (getClass() != obj.getClass())
+			return false;
+		Money other = (Money) obj;
+		return amount == other.amount;
 	}
 }
