@@ -6,4 +6,21 @@
     <version>0.0.1-SNAPSHOT</version>
   </parent>
   <artifactId>chapter04</artifactId>
+  
+  <properties>
+    <project.build.sourceEnconding>utf-8</project.build.sourceEnconding>
+    <maven.compiler.source>21</maven.compiler.source>
+    <maven.compiler.target>21</maven.compiler.target>
+  </properties>
+  
+  <build>
+		<finalName>chapter04</finalName>
+  </build>
+  <dependencies>
+  	<dependency>
+  		<groupId>poscodx.java-study</groupId>
+  		<artifactId>designpattern-practices</artifactId>
+  		<version>0.0.1-SNAPSHOT</version>
+  	</dependency>
+  </dependencies>
 </project>
