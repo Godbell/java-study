@@ -29,10 +29,12 @@ public class EchoRequestHandler extends Thread {
 
 			while (true) {
 				String data = br.readLine();
+
 				if (data == null) {
 					EchoServer.log("closed by client");
 					break;
 				}
+
 				EchoServer.log("received:" + data);
 				pw.println(data);
 			}
