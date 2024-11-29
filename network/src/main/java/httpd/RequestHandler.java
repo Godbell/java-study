@@ -65,28 +65,23 @@ public class RequestHandler extends Thread {
 
 		try {
 			if ("GET".equals(tokens[0])) {
-				responseStaticResources(outputStream, url, protocol);
+				HttpResponse res = getStaticResourceResponse(url, protocol);
+				sendResponse(outputStream, res);
 			} else {
 				// deals with GET only
 				throw new BadRequestException();
 			}
 		} catch (HttpException e) {
-			responseErrorPage(outputStream, protocol, e);
+			HttpResponse res = getErrorPageResponse(e, protocol);
+			sendResponse(outputStream, res);
 		} catch (Exception e) {
 			logError(e);
 		} finally {
-			try {
-				if (socket != null && socket.isClosed() == false) {
-					socket.close();
-				}
-			} catch (IOException ex) {
-				log("error:" + ex);
-			}
+			closeSocket();
 		}
 	}
 
-	private void responseStaticResources(OutputStream os, String url, String protocol)
-			throws IOException, NotFoundException {
+	private HttpResponse getStaticResourceResponse(String url, String protocol) throws NotFoundException {
 		// default(welcome) file
 		if ("/".equals(url)) {
 			url = "/index.html";
@@ -98,31 +93,63 @@ public class RequestHandler extends Thread {
 			throw new NotFoundException();
 		}
 
-		byte[] body = Files.readAllBytes(file.toPath());
-		String contentType = Files.probeContentType(file.toPath());
+		HttpResponse res = new HttpResponse();
 
-		sendResponse(os, 200, "OK", protocol, contentType, body);
+		try {
+			byte[] body = Files.readAllBytes(file.toPath());
+			res.setBody(body);
+
+			String contentType = Files.probeContentType(file.toPath());
+			res.setContentType(contentType);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return res;
 	}
 
-	private void responseErrorPage(OutputStream os, String protocol, HttpException httpException) {
+	private HttpResponse getErrorPageResponse(final HttpException httpException, String protocol) {
+		HttpResponse res = new HttpResponse();
+
 		try {
 			File file = new File("./webapp/error/" + httpException.statusCode + ".html");
 
 			byte[] body = Files.readAllBytes(file.toPath());
-			String contentType = Files.probeContentType(file.toPath());
+			res.setBody(body);
 
-			sendResponse(os, httpException.statusCode, httpException.status, protocol, contentType, body);
+			String contentType = Files.probeContentType(file.toPath());
+			res.setContentType(contentType);
+
+			res.setStatusCode(httpException.statusCode);
+			res.setProtocol(protocol);
 		} catch (IOException e) {
 			logError(e);
 		}
+
+		return res;
 	}
 
-	private void sendResponse(OutputStream os, int statusCode, String status, String protocol, String contentType,
-			byte[] body) throws IOException {
-		os.write((protocol + " " + statusCode + " " + status + "\n").getBytes("UTF-8"));
-		os.write(("Content-Type:" + contentType + "; charset=utf-8\n").getBytes("UTF-8"));
-		os.write("\n".getBytes());
-		os.write(body);
+	private void sendResponse(OutputStream os, final HttpResponse res) {
+		try {
+			os.write((res.getProtocol() + " " + res.getStatusCode() + " " + HttpResponse.getName(res.getStatusCode())
+					+ "\n").getBytes("UTF-8"));
+
+			os.write(("Content-Type:" + res.getContentType() + "; charset=utf-8\n").getBytes("UTF-8"));
+			os.write("\n".getBytes());
+			os.write(res.getBody());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void closeSocket() {
+		try {
+			if (socket != null && socket.isClosed() == false) {
+				socket.close();
+			}
+		} catch (IOException e) {
+			logError(e);
+		}
 	}
 
 	private void log(String message) {
