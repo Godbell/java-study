@@ -15,6 +15,22 @@ public class TCPClient {
 			socket = new Socket();
 			socket.connect(new InetSocketAddress("127.0.0.1", 8765));
 			
+			// buffer
+			int recvBufferSize = socket.getReceiveBufferSize();
+			int sendBufferSize = socket.getSendBufferSize();
+			System.out.println(recvBufferSize + ":" + sendBufferSize);
+			
+			// size mod
+			socket.setReceiveBufferSize(1024 * 10);
+			socket.setSendBufferSize(1024 * 10);
+			
+			recvBufferSize = socket.getReceiveBufferSize();
+			sendBufferSize = socket.getSendBufferSize();
+			System.out.println(recvBufferSize + ":" + sendBufferSize);
+			
+			// so nodelay
+			socket.setTcpNoDelay(true);
+			
 			// io stream
 			InputStream is = socket.getInputStream();
 			OutputStream os = socket.getOutputStream();
@@ -27,13 +43,12 @@ public class TCPClient {
 			int readByteCount = is.read(buffer);
 			
 			if (readByteCount == -1) {
-				System.out.println("[client] cloased by server");
+				System.out.println("[client] closed by server");
 				return;
 			}
 			
 			data = new String(buffer, 0, readByteCount, "utf-8");
 			System.out.println("[client] received: " + data);
-			
 		} catch (SocketException e) {
 			System.out.println("[server] closed by client: " + e.getMessage());
 		} catch (IOException e) {

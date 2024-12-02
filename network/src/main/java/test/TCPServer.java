@@ -49,6 +49,14 @@ public class TCPServer {
 				}
 
 				System.out.println("[server] receive: " + data);
+				
+				try {
+					Thread.sleep(3000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				
+				
 			}
 		} catch (IOException e) {
 			System.out.println("[server] error: " + e.getMessage());
