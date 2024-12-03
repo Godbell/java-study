@@ -1,0 +1,18 @@
+
+\
+java:S1192"FDefine a constant instead of duplicating this literal "utf-8" 3 times.(èëôÿ
+s	java:S135"YReduce the total number of break and continue statements in this loop to use at most one.(˜ïˆÿÿÿÿÿ
+_
+java:S2095"DUse try-with-resources or close this "Socket" in a "finally" clause.(º‚ñÍûÿÿÿÿ
+R
+java:S25894"7Remove this expression which always evaluates to "true"(©¢Ìüÿÿÿÿ
+R
+java:S25897"7Remove this expression which always evaluates to "true"(ãË©’øÿÿÿÿ
+O
+java:S4719"9Replace charset name argument with StandardCharsets.UTF_8(èëôÿ
+O
+java:S4719"9Replace charset name argument with StandardCharsets.UTF_8(—Š²Í
+O
+java:S4719"9Replace charset name argument with StandardCharsets.UTF_8(ƒéïÜ
+E
+java:S2093"*Change this "try" to a try-with-resources.(¡»¢üùÿÿÿÿ

@@ -1,7 +1,9 @@
 package chat.server;
 
 public interface RemoteServer {
-	public void broadcast(String message);
-	
-	public void disconnectUser(String socketName);
+    public void broadcastMessage(String name, String message);
+
+    public void broadcastSystemNotification(String message);
+
+    public void disconnectUser(String socketName);
 }

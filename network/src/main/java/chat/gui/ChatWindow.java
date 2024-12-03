@@ -11,6 +11,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 import chat.client.ChatClientEntity;
+import chat.domain.Response;
 
 public class ChatWindow implements ChatGui {
     private Frame frame;
@@ -59,8 +60,17 @@ public class ChatWindow implements ChatGui {
     }
 
     @Override
-    public void receive(String data) {
-        this.textArea.append(data + "\n");
+    public void receiveMessage(Response data) {
+        this.textArea.append(
+            "[" + data.dateString.split(" ")[1] + "] " + data.nickname + ": " + data.message + "\n"
+        );
+    }
+
+    @Override
+    public void receiveSystemNotification(Response data) {
+        this.textArea.append(
+            "SYSTEM - " + data.message + "\n"
+        );
     }
 
     private void sendMessage() {

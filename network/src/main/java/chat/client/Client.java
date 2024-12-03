@@ -1,5 +1,6 @@
 package chat.client;
 
+import chat.domain.Response;
 public interface Client {
-    void receive(String data);
+    void receive(Response data);
 }

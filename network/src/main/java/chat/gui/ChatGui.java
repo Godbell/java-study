@@ -1,7 +1,10 @@
 package chat.gui;
 
+import chat.domain.Response;
 public interface ChatGui {
     void show();
 
-    void receive(String data);
+    void receiveMessage(Response data);
+
+    void receiveSystemNotification(Response data);
 }

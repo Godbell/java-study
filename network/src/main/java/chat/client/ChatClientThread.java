@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.net.Socket;
 import java.net.SocketException;
 
+import chat.domain.Response;
 import chat.gui.ChatGui;
 import chat.util.Logger;
 
@@ -30,7 +31,9 @@ public class ChatClientThread extends Thread {
                     return;
                 }
 
-                ChatClientEntity.getClient().receive(line);
+                Logger.info("got a response: " + line);
+                Response response = Response.from(line);
+                ChatClientEntity.getClient().receive(response);
             } catch (SocketException e) {
                 return;
             } catch (IOException e) {

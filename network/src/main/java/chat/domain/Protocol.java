@@ -1,5 +1,5 @@
 package chat.domain;
 
 public enum Protocol {
-	JOIN, MESSAGE, QUIT
+    JOIN, MESSAGE, QUIT, SYSTEM
 }

@@ -7,7 +7,6 @@ import java.io.Writer;
 
 import chat.util.Logger;
 import chat.domain.Request;
-import chat.domain.Chat;
 
 public class ChatServerThread extends Thread {
     private String nickname = null;
@@ -44,6 +43,7 @@ public class ChatServerThread extends Thread {
                 case QUIT:
                     doQuit();
                     return;
+                default:
             }
         }
     }
@@ -64,25 +64,24 @@ public class ChatServerThread extends Thread {
             return null;
         }
 
-        Logger.info("got a request: " + request + " from " + this.socketName);
+        Logger.info("got a request [" + request + "] from " + this.socketName);
         return Request.from(request);
     }
 
     private void doJoin(String nickname) {
         this.nickname = nickname;
-        server.broadcast("[SYSTEM] " + this.nickname + "님께서 입장하였습니다.");
+        server.broadcastSystemNotification(this.nickname + "님께서 입장하였습니다.");
     }
 
     private void doMessage(String message) {
-        Chat chat = new Chat(this.nickname, message);
-        server.broadcast("[" + chat.getCreatedAt() + "] " + this.nickname + ": " + message);
+        server.broadcastMessage(this.nickname, message);
     }
 
     private void doQuit() {
         server.disconnectUser(this.socketName);
 
         if (this.nickname != null) {
-            server.broadcast("[SYSTEM] " + this.nickname + "님께서 퇴장하셨습니다.");
+            server.broadcastSystemNotification(this.nickname + "님께서 퇴장하셨습니다.");
         }
     }
 }

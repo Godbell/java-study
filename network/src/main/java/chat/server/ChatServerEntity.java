@@ -10,9 +10,12 @@ import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import chat.domain.Response;
 import chat.util.Logger;
 
 /**
@@ -21,9 +24,9 @@ import chat.util.Logger;
  * an 9th Posco DX Expert Academy assignment. Using this you can run a simple
  * chat server.<br>
  * </p>
- * 
+ *
  * <h2>Start Server</h2>
- * 
+ *
  * <p>
  * Start server by:<br>
  * <br>
@@ -32,13 +35,13 @@ import chat.util.Logger;
  * This is a blocking method, and will make additional threads per connected
  * user.<br>
  * </p>
- * 
+ *
  * <h2>Configuration</h2>
  * <p>
  * All configuration must be done before calling {@linkplain #listen()} Trying
  * to run setters while server is listening will do nothing.
  * </p>
- * 
+ *
  * <h3>Bind Address</h3>
  * <p>
  * It allows every source address by default by binding address to
@@ -51,115 +54,135 @@ import chat.util.Logger;
  * </p>
  */
 public class ChatServerEntity implements RemoteServer {
-	private String bindAddress;
-	private int port = 8080;
-	private ServerSocket serverSocket;
-	private boolean isListening = false;
-	private final Map<String, ChatServerThread> connections;
+    private String bindAddress;
+    private int port = 8080;
+    private ServerSocket serverSocket;
+    private boolean isListening = false;
+    private final Map<String, ChatServerThread> connections;
 
-	public ChatServerEntity() {
-		this.connections = new HashMap<>();
+    public ChatServerEntity() {
+        this.connections = new HashMap<>();
 
-		try {
-			this.bindAddress = InetAddress.getLocalHost().getHostAddress();
-		} catch (UnknownHostException e) {
-			this.bindAddress = "0.0.0.0";
-		}
-	}
+        try {
+            this.bindAddress = InetAddress.getLocalHost().getHostAddress();
+        } catch (UnknownHostException e) {
+            this.bindAddress = "0.0.0.0";
+        }
+    }
 
-	public void setBindAddress(String bindAddress) {
-		if (isListening) {
-			warnConfigWhileServerRunning();
-			return;
-		}
+    public void setBindAddress(String bindAddress) {
+        if (isListening) {
+            warnConfigWhileServerRunning();
+            return;
+        }
 
-		this.bindAddress = bindAddress;
-	}
+        this.bindAddress = bindAddress;
+    }
 
-	public void setPort(int port) {
-		if (isListening) {
-			warnConfigWhileServerRunning();
-			return;
-		}
+    public void setPort(int port) {
+        if (isListening) {
+            warnConfigWhileServerRunning();
+            return;
+        }
 
-		this.port = port;
-	}
+        this.port = port;
+    }
 
-	public void listen() {
-		Logger.info("연결 기다림 " + this.bindAddress + ":" + this.port);
+    public void listen() {
+        Logger.info("연결 기다림 " + this.bindAddress + ":" + this.port);
 
-		try {
-			init();
+        try {
+            init();
 
-			isListening = true;
+            isListening = true;
 
-			while (true) {
-				Socket socket = this.serverSocket.accept();
+            while (true) {
+                Socket socket = this.serverSocket.accept();
 
-				PrintWriter printWriter = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), "utf-8"),
-						true);
-				BufferedReader bufferedReader = new BufferedReader(
-						new InputStreamReader(socket.getInputStream(), "utf-8"));
+                PrintWriter printWriter = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), "utf-8"),
+                    true);
+                BufferedReader bufferedReader = new BufferedReader(
+                    new InputStreamReader(socket.getInputStream(), "utf-8"));
 
-				ChatServerThread thread = new ChatServerThread(this, printWriter, bufferedReader, socket.toString());
-				this.connections.put(socket.toString(), thread);
+                ChatServerThread thread = new ChatServerThread(this, printWriter, bufferedReader, socket.toString());
+                this.connections.put(socket.toString(), thread);
 
-				Logger.info("connection established: " + socket.toString());
+                Logger.info("connection established: " + socket.toString());
 
-				thread.start();
-			}
-		} catch (IOException e) {
-			Logger.error(e);
-		} finally {
-			if (isSocketOpen()) {
-				closeSocket();
-			}
+                thread.start();
+            }
+        } catch (IOException e) {
+            Logger.error(e);
+        } finally {
+            if (isSocketOpen()) {
+                closeSocket();
+            }
 
-			isListening = false;
-		}
-	}
+            isListening = false;
+        }
+    }
 
-	private void warnConfigWhileServerRunning() {
-		Logger.warn("Server is Running. This will make no effects. Is this intended?");
-	}
+    private void warnConfigWhileServerRunning() {
+        Logger.warn("Server is Running. This will make no effects. Is this intended?");
+    }
 
-	private void init() throws IOException {
-		this.serverSocket = new ServerSocket();
-		this.serverSocket.bind(new InetSocketAddress(this.bindAddress, this.port));
-	}
+    private void init() throws IOException {
+        this.serverSocket = new ServerSocket();
+        this.serverSocket.bind(new InetSocketAddress(this.bindAddress, this.port));
+    }
 
-	private boolean isSocketOpen() {
-		return this.serverSocket != null && !serverSocket.isClosed();
-	}
+    private boolean isSocketOpen() {
+        return this.serverSocket != null && !serverSocket.isClosed();
+    }
 
-	private final void closeSocket() {
-		if (!isSocketOpen()) {
-			Logger.info("socket is already closed.");
-			return;
-		}
+    private final void closeSocket() {
+        if (!isSocketOpen()) {
+            Logger.info("socket is already closed.");
+            return;
+        }
 
-		try {
-			if (isSocketOpen()) {
-				serverSocket.close();
-			}
-		} catch (IOException e) {
-			Logger.error(e);
-		}
-	}
+        try {
+            if (isSocketOpen()) {
+                serverSocket.close();
+            }
+        } catch (IOException e) {
+            Logger.error(e);
+        }
+    }
 
-	@Override
-	public void broadcast(String text) {
-		synchronized (this.connections) {
-            this.connections.keySet().forEach(key -> this.connections.get(key).sendText(text));
-		}
-	}
+    private String getDateString(Date date) {
+        SimpleDateFormat formatter = new SimpleDateFormat("HH:mm");
+        return formatter.format(date);
+    }
 
-	@Override
-	public void disconnectUser(String socketName) {
-		synchronized (this.connections) {
-			this.connections.remove(socketName);
-		}
+    @Override
+    public void broadcastMessage(String nickname, String message) {
+        Response response = new Response(new Date(), nickname, message);
 
-		Logger.info("Disconnected " + socketName + "\nwe now have " + this.connections.size() + " in this server.");
-	}
+        synchronized (this.connections) {
+            this.connections.keySet().forEach(key -> this.connections.get(key).sendText(
+                response.toStringEncoded()
+            ));
+        }
+    }
+
+    @Override
+    public void broadcastSystemNotification(String message) {
+        Response response = new Response(new Date(), message);
+        synchronized (this.connections) {
+            this.connections.keySet().forEach(key -> this.connections.get(key).sendText(
+                response.toStringEncoded()
+            ));
+        }
+    }
+
+    @Override
+    public void disconnectUser(String socketName) {
+        synchronized (this.connections) {
+            this.connections.remove(socketName);
+        }
+
+        Logger.info(
+            "Disconnected " + socketName + "\nwe now have " + this.connections.size() + " users in this server.");
+    }
 }

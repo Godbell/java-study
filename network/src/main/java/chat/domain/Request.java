@@ -1,13 +1,23 @@
 package chat.domain;
 
 import chat.util.Logger;
+import chat.util.MessageCodec;
 public class Request {
     public final Protocol protocol;
     public final String body;
 
-    private Request(Protocol protocol, String body) {
+    public Request(Protocol protocol, String body) {
         this.protocol = protocol;
         this.body = body;
+    }
+
+    public String toStringEncoded() {
+        return switch (this.protocol) {
+            case JOIN, MESSAGE -> this.protocol + ":" +
+                MessageCodec.encode(this.body);
+            case QUIT -> this.protocol.toString();
+            default -> null;
+        };
     }
 
     public static Request from(String rawRequest) {
@@ -16,16 +26,28 @@ public class Request {
         }
 
         String[] tokens = rawRequest.split(":");
+        Protocol p;
 
-        if (tokens.length != 2) {
-            Logger.info("that was an invalid request.");
+        try {
+            p = Protocol.valueOf(tokens[0]);
+        } catch (IllegalArgumentException e) {
+            Logger.error(e);
             return null;
         }
 
-        try {
-            return new Request(Protocol.valueOf(tokens[0]), tokens[1]);
-        } catch (IllegalArgumentException e) {
-            Logger.error(e);
+        if (p == Protocol.QUIT) {
+            return new Request(Protocol.QUIT, null);
+        } else if (p == Protocol.MESSAGE) {
+            if (tokens.length != 2) {
+                return null;
+            }
+
+            String message = MessageCodec.decode(tokens[1]);
+            return new Request(Protocol.MESSAGE, message);
+        } else if (p == Protocol.JOIN) {
+            String nickname = MessageCodec.decode(tokens[1]);
+            return new Request(Protocol.JOIN, nickname);
+        } else {
             return null;
         }
     }

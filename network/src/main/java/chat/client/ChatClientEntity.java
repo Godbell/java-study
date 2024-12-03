@@ -7,6 +7,9 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.Scanner;
 
+import chat.domain.Protocol;
+import chat.domain.Request;
+import chat.domain.Response;
 import chat.gui.ChatGui;
 import chat.server.ChatServerEntity;
 import chat.util.Logger;
@@ -44,7 +47,8 @@ public class ChatClientEntity implements Client {
             thread.start();
 
             printWriter = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), "utf-8"), true);
-            printWriter.println("JOIN:" + nickname);
+            Request joinRequest = new Request(Protocol.JOIN, nickname);
+            printWriter.println(joinRequest.toStringEncoded());
 
             while (true) {
                 if (gui != null) {
@@ -82,21 +86,27 @@ public class ChatClientEntity implements Client {
     }
 
     @Override
-    public void receive(String data) {
+    public void receive(Response response) {
         if (this.gui == null) {
-            System.out.println(data);
+            System.out.println(response);
         } else {
-            this.gui.receive(data);
+            if (response.protocol == Protocol.SYSTEM) {
+                this.gui.receiveSystemNotification(response);
+            } else {
+                this.gui.receiveMessage(response);
+            }
         }
     }
 
     private void sendMessage(String message) {
-        this.printWriter.println("MESSAGE:" + message);
+        Request request = new Request(Protocol.MESSAGE, message);
+        this.printWriter.println(request.toStringEncoded());
         this.printWriter.flush();
     }
 
     private void sendQuitSign() {
-        this.printWriter.println("QUIT");
+        Request request = new Request(Protocol.QUIT, null);
+        this.printWriter.println(request.toStringEncoded());
         this.printWriter.flush();
     }
 
