@@ -87,13 +87,17 @@ public class ChatClientEntity implements Client {
 
     @Override
     public void receive(Response response) {
-        if (this.gui == null) {
-            System.out.println(response);
-        } else {
-            if (response.protocol == Protocol.SYSTEM) {
+        if (response.protocol == Protocol.SYSTEM) {
+            if (gui != null) {
                 this.gui.receiveSystemNotification(response);
             } else {
+                System.out.println("[" + response.dateString + "] SYSTEM - " + response.message);
+            }
+        } else if (response.protocol == Protocol.MESSAGE) {
+            if (gui != null) {
                 this.gui.receiveMessage(response);
+            } else {
+                System.out.println("[" + response.dateString + "] " + response.nickname + ": " + response.message);
             }
         }
     }

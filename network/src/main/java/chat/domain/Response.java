@@ -53,7 +53,6 @@ public class Response {
         }
 
         String messageDate = MessageCodec.decode(tokens[1]);
-        Logger.info("converting message date from: " + messageDate);
 
         if (p == Protocol.SYSTEM) {
             String message = MessageCodec.decode(tokens[2]);
