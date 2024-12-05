@@ -5,7 +5,7 @@
     <artifactId>java-study</artifactId>
     <version>0.0.1-SNAPSHOT</version>
   </parent>
-  <artifactId>Practice04</artifactId>
+  <artifactId>practice04</artifactId>
   
   <properties>
     <project.build.sourceEnconding>utf-8</project.build.sourceEnconding>

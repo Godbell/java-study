@@ -7,11 +7,11 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="practice03" />
+        <module name="practice04" />
         <module name="practice01" />
         <module name="designpattern-practices" />
         <module name="chapter03" />
         <module name="practice05" />
-        <module name="Practice04" />
         <module name="chapter04" />
         <module name="network" />
       </profile>
