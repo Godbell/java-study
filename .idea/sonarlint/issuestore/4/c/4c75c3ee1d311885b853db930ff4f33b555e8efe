@@ -1,0 +1,13 @@
+
+R
+java:S4973
+"<Strings and Boxed types should be compared using "equals()".(ğñ
+o	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(æîü‡
+P
+java:S1854"5Remove this useless assignment to local variable "i".(ôôöüÿÿÿÿ
+<
+java:S2129"!Remove this "Integer" constructor(ôôöüÿÿÿÿ
+c
+java:S5738"HRemove this call to a deprecated method, it has been marked for removal.(ôôöüÿÿÿÿ
+A
+java:S1481"&Remove this unused "i" local variable.(ôôöüÿÿÿÿ

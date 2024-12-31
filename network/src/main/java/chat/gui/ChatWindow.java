@@ -9,6 +9,7 @@ import java.awt.TextArea;
 import java.awt.TextField;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.nio.charset.StandardCharsets;
 
 import chat.client.ChatClientEntity;
 import chat.domain.Response;
